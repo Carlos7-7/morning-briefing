@@ -30,17 +30,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install system + Python dependencies
+      - name: Install dependencies
         if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           sudo apt-get update
-          sudo apt-get install -y espeak-ng ffmpeg
+          sudo apt-get install -y ffmpeg
           pip install -r requirements.txt
 
       - name: Generate today's briefing
         if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python generate_briefing.py
 
       - name: Commit and push new episode
