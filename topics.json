@@ -1,0 +1,37 @@
+{
+  "topics": {
+    "Politics and Elections": [
+      "https://feeds.npr.org/1014/rss.xml"
+    ],
+    "Geopolitics and Global News": [
+      "https://feeds.npr.org/1004/rss.xml"
+    ],
+    "Local and Regional Tri-State News": [
+      "https://www.wowktv.com/feed/",
+      "https://www.herald-dispatch.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc"
+    ],
+    "Space": [
+      "https://www.nasa.gov/news-release/feed/"
+    ],
+    "Science": [
+      "https://feeds.npr.org/1007/rss.xml"
+    ],
+    "Technology and AI": [
+      "https://feeds.arstechnica.com/arstechnica/index"
+    ],
+    "Economy and Markets": [
+      "https://www.cnbc.com/id/20910258/device/rss/rss.html"
+    ],
+    "Sports": [
+      "https://www.espn.com/espn/rss/news"
+    ],
+    "Automotive": [
+      "https://www.motor1.com/rss/news/all/"
+    ]
+  },
+  "weather": {
+    "latitude": 38.4192,
+    "longitude": -82.4452,
+    "note": "General Huntington, WV coordinates as a tri-state center point. Adjust if you want a different anchor point."
+  }
+}
