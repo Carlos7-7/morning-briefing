@@ -1,0 +1,52 @@
+name: Daily Morning Briefing
+
+on:
+  schedule:
+    # Two triggers to cover both EDT (UTC-4) and EST (UTC-5) — the gate
+    # step below figures out which one is "real" for today and skips the other.
+    - cron: '30 9 * * *'
+    - cron: '30 10 * * *'
+  workflow_dispatch: {}  # lets you trigger a manual test run from the Actions tab
+
+jobs:
+  build-briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if it's actually 5:30 AM Eastern right now
+        id: gate
+        run: |
+          HOUR_ET=$(TZ="America/New_York" date +%H)
+          MIN_ET=$(TZ="America/New_York" date +%M)
+          if [ "$HOUR_ET" = "05" ] && [ "$MIN_ET" -ge "25" ] && [ "$MIN_ET" -le "35" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
+
+      - name: Set up Python
+        if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
+        run: pip install -r requirements.txt
+
+      - name: Generate today's briefing
+        if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generate_briefing.py
+
+      - name: Commit and push new episode
+        if: steps.gate.outputs.run == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "morning-briefing-bot"
+          git config user.email "actions@github.com"
+          git add episodes/ podcast.xml
+          git commit -m "Morning briefing $(date -u +%Y-%m-%d)" || echo "Nothing to commit"
+          git push
